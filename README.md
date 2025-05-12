@@ -3,6 +3,9 @@
 ```
 git clone https://github.com/sdariza/ED2-PF-202510.git
 ```
+## To install docker go to:
+[Get Docker](https://docs.docker.com/get-started/get-docker/)
+
 ## To run docker use:
 ```
 docker compose up
