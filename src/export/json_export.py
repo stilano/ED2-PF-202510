@@ -3,7 +3,7 @@ import time
 import os
 from database.sql_connection import get_connection, get_data
 
-def export_csv():
+def export_json():
     start = time.time()
 
     conn = get_connection()
@@ -14,15 +14,15 @@ def export_csv():
                 'ID_PRODUCTO', 'CANTIDAD', 'PRECIO_UNITARIO',
                 'DESCUENTO', 'FORMA_PAGO']
     
-    df = pd.DataFrame(data, columns=columnas) 
-    csv_path = "ventas.csv"
-    df.to_csv(csv_path, index=False)
+    df = pd.DataFrame(data, columns=columnas)
+    json_path = "ventas.json"
+    df.to_json(json_path, orient="records", indent=4, force_ascii=False)
 
     end = time.time()
-    size_kb = os.path.getsize(csv_path) / 1024
+    size_kb = os.path.getsize(json_path) / 1024
 
     return {
-        "formato": "CSV",
+        "formato": "JSON",
         "tiempo": round(end - start, 4),
         "tamano_kb": round(size_kb, 2)
     }

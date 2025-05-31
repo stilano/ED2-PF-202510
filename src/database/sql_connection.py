@@ -1,6 +1,11 @@
+#Para leer el .env
+from dotenv import load_dotenv
 from mysql.connector import connect, errorcode, Error
 from os import environ
 import pandas as pd
+
+#Cargar variables del archivo .env
+load_dotenv()
 
 config = {
     "user": environ['DATABASE_USERNAME'],
@@ -36,7 +41,7 @@ cnx = get_connection()
 
 print("Connection established")
 
-data = get_data(cnx, "SELECT * FROM UN.VENTAS LIMTI 20")
+data = get_data(cnx, "SELECT * FROM UN.VENTAS LIMIT 10")
 
 
 df = pd.DataFrame(data, columns=['ID_VENTA', 'FECHA_VENTA', 'ID_CLIENTE', 'ID_EMPLEADO',

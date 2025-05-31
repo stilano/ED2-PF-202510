@@ -124,8 +124,40 @@ Si por error ya habías hecho commit y push de (`.env`) antes de añadirlo a (`.
 
 A partir de este momento, el archivo .env ya no se mostrará en el listado de archivos de GitHub. Sin embargo, aún existirá en el historial anterior de commits.
 
-> **Responsable de esta sección**: [Pones el nombre]  
+> **Responsable de esta sección**: [Jorge Silva]  
 > Encargado de la exportacion y formato de formatos csv y json.
+   Esta sección se encarga de la **extracción de datos** desde la tabla `UN.VENTAS` y su posterior **exportación en dos formatos**: CSV y JSON. También se realiza una **medición del tamaño de los archivos** generados y el **tiempo requerido para su lectura**, con el fin de evaluar el rendimiento de cada formato.
+   ---
+
+### 3.1 Extracción de Datos
+
+Los datos se obtienen mediante una conexión establecida usando `mysql-connector-python`, y una consulta `SELECT * FROM UN.VENTAS`.
+
+El acceso a las credenciales de la base de datos se gestiona de forma segura a través de variables de entorno, definidas en el archivo `.env`.
+
+---
+
+### 3.2 Exportación en Formatos CSV y JSON
+
+Se desarrollaron dos módulos:
+
+- `export_csv.py`: Exporta los datos a un archivo `ventas.csv`.
+- `export_json.py`: Exporta los datos a un archivo `ventas.json`.
+
+Ambos módulos:
+
+- Convierten los datos crudos a `pandas.DataFrame`.
+- Exportan los datos al formato correspondiente.
+- Miden:
+  - Tiempo de exportación.
+  - Tiempo de lectura.
+  - Tamaño del archivo en disco.
+
+---
+
+### 3.3 Comparación de Resultados
+
+Al ejecutar el módulo principal (`main.py`), se ejecutan ambos scripts de exportación y se comparan resultados.
 
 > **Responsable de esta sección**: [Pones el nombre]  
 > Encargado de los algoritmos 'sort' e hilos.
