@@ -129,7 +129,7 @@ A partir de este momento, el archivo .env ya no se mostrará en el listado de ar
    Esta sección se encarga de la **extracción de datos** desde la tabla `UN.VENTAS` y su posterior **exportación en dos formatos**: CSV y JSON. También se realiza una **medición del tamaño de los archivos** generados y el **tiempo requerido para su lectura**, con el fin de evaluar el rendimiento de cada formato.
    ---
 
-### 3.1 Extracción de Datos
+### 3 Extracción de Datos
 
 Los datos se obtienen mediante una conexión establecida usando `mysql-connector-python`, y una consulta `SELECT * FROM UN.VENTAS`.
 
@@ -137,7 +137,7 @@ El acceso a las credenciales de la base de datos se gestiona de forma segura a t
 
 ---
 
-### 3.2 Exportación en Formatos CSV y JSON
+### 3.1 Exportación en Formatos CSV y JSON
 
 Se desarrollaron dos módulos:
 
@@ -155,7 +155,7 @@ Ambos módulos:
 
 ---
 
-### 3.3 Comparación de Resultados
+### 3.2 Comparación de Resultados
 
 Al ejecutar el módulo principal (`main.py`), se ejecutan ambos scripts de exportación y se comparan resultados.
 
