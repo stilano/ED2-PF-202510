@@ -159,7 +159,7 @@ Ambos módulos:
 
 Al ejecutar el módulo principal (`main.py`), se ejecutan ambos scripts de exportación y se comparan resultados.
 
-> **Responsable de esta sección**: [Pones el nombre]  
+> **Responsable de esta sección**: [Rafael Mejia]  
 > Encargado de los algoritmos 'sort' e hilos.
 
 > **Responsable de esta sección**: [Pones el nombre]  
