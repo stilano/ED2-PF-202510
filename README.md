@@ -162,5 +162,5 @@ Al ejecutar el módulo principal (`main.py`), se ejecutan ambos scripts de expor
 > **Responsable de esta sección**: [Rafael Mejia]  
 > Encargado de los algoritmos 'sort' e hilos.
 
-> **Responsable de esta sección**: [Pones el nombre]  
+> **Responsable de esta sección**: [Miguel Cortes]  
 > Encargado de los sockets (cliente - servidor) y analisis del tiempo.
