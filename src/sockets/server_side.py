@@ -1,35 +1,64 @@
 import socket
 import threading
+import json
 
+# Diccionario global para almacenar tiempos recibidos:
+# { "CSV": { "QuickSort": 0.0234, "MergeSort": 0.0117, … },
+#   "JSON": { … } }
+resultados_recibidos = {}
 
-class ClientThread(threading.Thread):
-    def __init__(self, clientAddress, clientsocket):
-        threading.Thread.__init__(self)
-        self.csocket = clientsocket
-        print("New connection added: ", clientAddress)
-
-    def run(self):
-        print("Connection from : ", clientAddress)
-        msg = ''
+def manejar_cliente(conn, addr):
+    try:
+        # Esperar a que el cliente envíe todos los datos (hasta EOF)
+        data = b""
         while True:
-            data = self.csocket.recv(2048)
-            msg = data.decode()
-            if msg == 'bye':
+            packet = conn.recv(4096)
+            if not packet:
                 break
-            print("from client", msg)
-            self.csocket.send(bytes(msg, 'UTF-8'))
-        print("Client at ", clientAddress, " disconnected")
+            data += packet
 
+        # Parsear JSON recibido
+        mensaje = json.loads(data.decode("utf-8"))
+        origen    = mensaje["origen"]       # "CSV" o "JSON"
+        algoritmo = mensaje["algoritmo"]    # "QuickSort", etc.
+        tiempo    = mensaje["tiempo"]       # float
 
-LOCALHOST = "192.168.1.4"
-PORT = 8080
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server.bind((LOCALHOST, PORT))
-print("Server started")
-print("Waiting for client request..")
-while True:
-    server.listen(3)
-    clientsock, clientAddress = server.accept()
-    newthread = ClientThread(clientAddress, clientsock)
-    newthread.start()
+        # Guardar en resultados_recibidos
+        if origen not in resultados_recibidos:
+            resultados_recibidos[origen] = {}
+        resultados_recibidos[origen][algoritmo] = tiempo
+
+        print(f"[Servidor] Recibido de {addr}: {origen} - {algoritmo} en {tiempo:.4f} s")
+
+        # Opcional: responder un ACK
+        respuesta = { "status": "OK", "recibido": True }
+        conn.send(json.dumps(respuesta).encode("utf-8"))
+
+        # (Opcional) Si ya recibimos los 4 algoritmos de este origen, podemos mostrar un resumen:
+        if len(resultados_recibidos[origen]) == 4:
+            print(f"\n>>> Todos los resultados para {origen} ya llegaron:")
+            for algo, t in resultados_recibidos[origen].items():
+                print(f"    • {algo}: {t:.4f} s")
+            print(">>> Fin del resumen para", origen, "\n")
+
+    except Exception as e:
+        print("[Servidor] Error al manejar cliente:", e)
+    finally:
+        conn.close()
+
+def iniciar_servidor(host="0.0.0.0", port=5000):
+    serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    serv.bind((host, port))
+    serv.listen()
+
+    print(f"[Servidor] Escuchando en {host}:{port} ...")
+    while True:
+        conn, addr = serv.accept()
+        # Atender cada cliente en un hilo separado
+        hilo = threading.Thread(target=manejar_cliente, args=(conn, addr))
+        hilo.daemon = True
+        hilo.start()
+
+if __name__ == "__main__":
+    iniciar_servidor()
