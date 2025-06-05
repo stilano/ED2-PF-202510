@@ -1,6 +1,7 @@
 import pandas as pd
 import time
 import os
+import json
 from database.sql_connection import get_connection, get_data
 
 def export_json():

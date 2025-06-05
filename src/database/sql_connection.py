@@ -41,7 +41,7 @@ cnx = get_connection()
 
 print("Connection established")
 
-data = get_data(cnx, "SELECT * FROM UN.VENTAS LIMIT 10")
+data = get_data(cnx, "SELECT * FROM UN.VENTAS LIMIT 1000")
 
 
 df = pd.DataFrame(data, columns=['ID_VENTA', 'FECHA_VENTA', 'ID_CLIENTE', 'ID_EMPLEADO',
