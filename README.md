@@ -2,6 +2,7 @@
 
 > **Responsable de esta sección**: [Samuel Tilano]  
 > Encargado de la conexión a la base de datos MySQL, extracción de datos de la tabla `UN.VENTAS`.
+   
 
 ---
 
