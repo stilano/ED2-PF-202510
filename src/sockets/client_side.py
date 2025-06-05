@@ -1,5 +1,5 @@
-import socket
 import json
+import socket
 
 def send_result(
     origen: str,
@@ -9,8 +9,8 @@ def send_result(
     server_port: int = 5000
 ) -> None:
     """
-    Crea un socket TCP hacia (server_host, server_port) y envía un JSON con:
-      { "origen": origen, "algoritmo": algoritmo, "tiempo": tiempo }
+    Crea un socket hacia (server_host, server_port) y envía un JSON con:
+      { "origen": origen, "algoritmo": algoritmo, "tiempo": tiempo }s
     Luego opcionalmente espera un ACK y cierra la conexión.
     """
     paquete = {
@@ -23,10 +23,6 @@ def send_result(
         sock.connect((server_host, server_port))
         mensaje = json.dumps(paquete).encode("utf-8")
         sock.sendall(mensaje)
-
-        # (Opcional) leer ACK del servidor (si tu server_side.py lo envía)
-        # ack = sock.recv(1024)
-        # print(f"[Client] ACK recibido: {ack.decode()}")
 
     except Exception as e:
         print(f"[Client] Error al enviar resultado: {e}")

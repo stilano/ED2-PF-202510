@@ -82,13 +82,16 @@ def run_sorts_in_threads(
     threads: List[threading.Thread] = []
 
     # 2) Crear un hilo por cada algoritmo
-    for name, func in algorithms.items():
+    for algo_name, func in algorithms.items():
+        # Combinar el prefijo y el nombre del algoritmo
+        full_name = f"{prefix}_{algo_name}"
         copia_data = data.copy()
         hilo = threading.Thread(
             target=timed_sort,
-            args=(name, func, copia_data, results, server_host, server_port)
+            args=(full_name, func, copia_data, results, server_host, server_port)
         )
         threads.append(hilo)
+
 
     # 3) Iniciar todos los hilos
     for hilo in threads:
