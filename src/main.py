@@ -11,15 +11,15 @@ def comparar_exportaciones():
         print(f"  📦 Tamaño: {resultado['tamano_kb']:.2f} KB")
 
 def comparar_sorts():
-    from threading_custom.threading_ed2 import run_sorts_in_threads
+    
     import os
     from load.loadcsv import load_csv_cantidad
     from load.loadjson import load_json_cantidad
-
+    from threading_custom.threading_ed2 import run_sorts_in_threads
 
     path_csv = "ventas.csv"
     path_json = "ventas.json"
-    n_limit = 1000000  # Por ejemplo, leer solo las primeras 10 000 filas
+    n_limit = 1000000  # Limitar a 1 millón de registros
 
     if not os.path.exists(path_csv) or not os.path.exists(path_json):
         print("No se encontraron los archivos 'ventas.csv' y/o 'ventas.json' en el directorio.")
@@ -48,9 +48,9 @@ def comparar_sorts():
 
     print("\nResultados (JSON):")
     for name, info in results_json.items():
-        print(f"  • {name}: {info['time']:.4f} s)")
+        print(f"  • {name}: {info['time']:.4f} s")
 
 if __name__ == "__main__":
-    comparar_exportaciones()
+    #comparar_exportaciones()
     comparar_sorts()
     print("\n✅ Comparación completada.")
