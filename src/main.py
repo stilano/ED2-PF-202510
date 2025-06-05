@@ -5,16 +5,21 @@ import json
 import pandas as pd
 from typing import Dict, List
 
-# 1) Importa tus loaders para CSV y JSON, ajustando la ruta al nombre real de tus módulos
-#    Por ejemplo, si tu loader CSV está en src/loaders/csv_loader.py:
+# 1. Importamos los loaders para CSV y JSON, ajustando la ruta al nombre real de tus módulos
 from load.loadcsv import load_csv_cantidad
-#    Y tu loader JSON está en src/loaders/json_loader.py:
 from load.loadjson import load_json_cantidad
 
-# 2) Importa run_sorts_in_threads (el que arranca los hilos y envía por sockets)
+# 2. Importamos run_sorts_in_threads (el que arranca los hilos y envía por sockets)
 from threading_custom.threading_ed2 import run_sorts_in_threads
 
 def comparar_exportaciones():
+    """
+    Compara los resultados de exportar datos en formato CSV y JSON.
+    Llama a las funciones `export_csv()` y `export_json()` para obtener los resultados de exportación en ambos formatos.
+    Imprime en consola el formato, el tiempo de exportación y el tamaño del archivo generado para cada uno.
+    Retorna:
+        None
+    """
     csv_resultado = export_csv()
     json_resultado = export_json()
 
@@ -25,6 +30,20 @@ def comparar_exportaciones():
         print(f"  📦 Tamaño: {resultado['tamano_kb']:.2f} KB")
 
 def comparar_sorts():
+    """
+    Compara el rendimiento de diferentes algoritmos de ordenamiento sobre datos de cantidad de ventas cargados desde archivos CSV y JSON.
+    Esta función realiza los siguientes pasos:
+    1. Verifica la existencia de los archivos 'ventas.csv' y 'ventas.json' en el directorio actual.
+    2. Carga hasta 1,000,000 de registros de la columna "CANTIDAD" de cada archivo.
+    3. Ejecuta múltiples algoritmos de ordenamiento en hilos paralelos sobre los datos cargados de ambas fuentes (CSV y JSON).
+    4. Imprime el tiempo de ejecución de cada algoritmo de ordenamiento para ambas fuentes de datos.
+    Dependencias:
+        - load.loadcsv.load_csv_cantidad: Función para cargar la columna "CANTIDAD" de un archivo CSV.
+        - load.loadjson.load_json_cantidad: Función para cargar la columna "CANTIDAD" de un archivo JSON.
+        - threading_custom.threading_ed2.run_sorts_in_threads: Función para ejecutar algoritmos de ordenamiento en hilos paralelos.
+    Retorna:
+        Nada.
+    """
     
     import os
     from load.loadcsv import load_csv_cantidad
@@ -39,7 +58,7 @@ def comparar_sorts():
         print("No se encontraron los archivos 'ventas.csv' y/o 'ventas.json' en el directorio.")
         return
 
-    # 1) Leer columna "cantidad" de cada archivo, limitando a n_limit
+    # 1. Se lee columna "cantidad" de cada archivo, limitando a n_limit
     print("Leyendo CSV (primeras filas)...")
     data_csv = load_csv_cantidad(path_csv, column="CANTIDAD", n=n_limit)
     print(f"Se obtuvieron {len(data_csv)} registros del CSV.\n")
@@ -48,7 +67,7 @@ def comparar_sorts():
     data_json = load_json_cantidad(path_json, column="CANTIDAD", n=n_limit)
     print(f"Se obtuvieron {len(data_json)} registros del JSON.\n")
 
-    # 2) Ejecutar ordenamientos en hilos para CSV
+    # 2) Se ejecutan ordenamientos en hilos para CSV
     print("Iniciando ordenamientos en paralelo sobre CSV...\n")
     results_csv = run_sorts_in_threads(data_csv, prefix="CSV")
 
@@ -56,7 +75,7 @@ def comparar_sorts():
     for name, info in results_csv.items():
         print(f"  • {name}: {info['time']:.4f} s")
 
-    # 3) Ejecutar ordenamientos en hilos para JSON
+    # 3. Se ejecutan ordenamientos en hilos para JSON
     print("\nIniciando ordenamientos en paralelo sobre JSON...\n")
     results_json = run_sorts_in_threads(data_json, prefix="JSON")
 
@@ -65,21 +84,32 @@ def comparar_sorts():
         print(f"  • {name}: {info['time']:.4f} s")
         
 def conexion_cliente_servidor():
-    # -- Ajusta estas rutas a donde tengas 'ventas.csv' y 'ventas.json' --
+    """
+    Realiza la conexión cliente-servidor para procesar y ordenar datos de ventas desde archivos CSV y JSON.
+    Este procedimiento realiza las siguientes acciones:
+    1. Verifica la existencia de los archivos 'ventas.csv' y 'ventas.json'.
+    2. Carga la columna "CANTIDAD" de ambos archivos, con opción de limitar el número de registros.
+    3. Ejecuta en paralelo cuatro algoritmos de ordenamiento sobre los datos de cada archivo y envía los tiempos de ejecución al servidor mediante sockets.
+    4. Muestra un resumen de los tiempos de ejecución para cada algoritmo y archivo.
+    5. Guarda las listas ordenadas en archivos separados (CSV y JSON).
+    6. Retorna los resultados de los ordenamientos en memoria para su uso posterior.
+    Returns:
+        Tuple[Dict[str, dict], Dict[str, dict]]: 
+            - Un diccionario con los resultados de los algoritmos sobre el archivo CSV.
+            - Un diccionario con los resultados de los algoritmos sobre el archivo JSON.
+    """
+
     path_csv  = "ventas.csv"
     path_json = "ventas.json"
-    # Si quieres limitar la cantidad de registros que lees, pon un número (p.ej. 10000).
-    # Si prefieres leer el archivo completo, deja n_limit = None.
     n_limit   = 10000
 
-    # Verifica que existan ambos archivos
+    # Verificamos que existan ambos archivos
     if not os.path.exists(path_csv) or not os.path.exists(path_json):
         print("Error: no se encontró 'ventas.csv' o 'ventas.json' en el directorio.")
         return {}, {}
 
-    # ---------------------------
-    # 1) Cargar la columna "cantidad" de cada archivo
-    # ---------------------------
+    
+    # 1. Cargamos la columna "cantidad" de cada archivo
     print("Leyendo CSV...")
     data_csv: List[int] = load_csv_cantidad(path_csv, column="CANTIDAD", n=n_limit)
     print(f"  → {len(data_csv)} registros cargados desde CSV.\n")
@@ -88,10 +118,9 @@ def conexion_cliente_servidor():
     data_json: List[int] = load_json_cantidad(path_json, column="CANTIDAD", n=n_limit)
     print(f"  → {len(data_json)} registros cargados desde JSON.\n")
 
-    # ---------------------------
-    # 2) Ejecutar los 4 algoritmos en paralelo sobre CSV y enviar tiempos por socket
-    # ---------------------------
-    print("Ordenando CSV en paralelo y enviando resultados al servidor...\n")
+    
+    # 2. Ejecutamos los 4 algoritmos en paralelo sobre CSV y enviar tiempos por socket
+    print("Medimos el tiempo de conexion al servidor para cada sort en CSV...\n")
     results_csv: Dict[str, dict] = run_sorts_in_threads(
         data=data_csv,
         prefix="CSV",
@@ -99,10 +128,9 @@ def conexion_cliente_servidor():
         server_port=5000          # Debe coincidir con el puerto en server_side.py
     )
 
-    # ---------------------------
-    # 3) Ejecutar los 4 algoritmos en paralelo sobre JSON y enviar tiempos por socket
-    # ---------------------------
-    print("\nOrdenando JSON en paralelo y enviando resultados al servidor...\n")
+    
+    # 3. Ejecutamos los 4 algoritmos en paralelo sobre JSON y enviar tiempos por socket
+    print("Medimos el tiempo de conexion al servidor para cada sort en JSON...\n")
     results_json: Dict[str, dict] = run_sorts_in_threads(
         data=data_json,
         prefix="JSON",
@@ -110,9 +138,9 @@ def conexion_cliente_servidor():
         server_port=5000
     )
 
-    # ---------------------------
-    # 4) Mostrar un breve resumen de tiempos y tamaño de cada lista ordenada
-    # ---------------------------
+    
+    # 4. Se muestra un breve resumen de tiempos y tamaño de cada lista ordenada
+    
     print("\n--- Resumen de tiempos (CSV) ---")
     for name, info in results_csv.items():
         print(f"  • {name}: {info['time']:.4f} s")
@@ -121,10 +149,9 @@ def conexion_cliente_servidor():
     for name, info in results_json.items():
         print(f"  • {name}: {info['time']:.4f} s")
 
-    # ---------------------------
-    # 5) (Opcional) Guardar cada lista ordenada en disco
-    #    Por ejemplo: "CSV_QuickSort_sorted.csv" y "CSV_QuickSort_sorted.json"
-    # ---------------------------
+    
+    # 5) Guardamos cada lista ordenada en disco
+    
     for name, info in results_csv.items():
         # Guardar en CSV de una sola columna
         df_out = pd.DataFrame({"cantidad_ordenada": info["sorted"]})
@@ -141,12 +168,12 @@ def conexion_cliente_servidor():
 
         print(f"  → Guardado: {out_json}")
 
-    # ---------------------------
-    # 6) Retornar los resultados en memoria para cualquier uso posterior
-    # ---------------------------
+    
+    # 6) Retornamos los resultados en memoria para cualquier uso posterior
+    
     return results_csv, results_json
-
+    
 if __name__ == "__main__":
-    #comparar_exportaciones()
+    comparar_exportaciones()
     comparar_sorts()
     results_csv, results_json = conexion_cliente_servidor()
