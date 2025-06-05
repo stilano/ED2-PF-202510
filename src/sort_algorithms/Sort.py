@@ -4,10 +4,11 @@ from sort_algorithms.countingsort import counting_sort
 from sort_algorithms.radixsort import radix_sort
 
 
+
 # Diccionario que asocia los nombres de los algoritmos con sus funciones
 algorithms = {
-    f"{prefix}_QuickSort": quick_sort,
-    f"{prefix}_MergeSort": merge_sort,
-    f"{prefix}_CountingSort": counting_sort,
-    f"{prefix}_RadixSort": radix_sort
+    "QuickSort": quick_sort,
+    "MergeSort": merge_sort,
+    "RadixSort": radix_sort,
+    "CountingSort": counting_sort,
 }

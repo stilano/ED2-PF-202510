@@ -63,7 +63,7 @@ def comparar_sorts():
     print("\nResultados (JSON):")
     for name, info in results_json.items():
         print(f"  • {name}: {info['time']:.4f} s")
-
+        
 def main():
     # -- Ajusta estas rutas a donde tengas 'ventas.csv' y 'ventas.json' --
     path_csv  = "ventas.csv"
@@ -154,8 +154,8 @@ def main():
     # ---------------------------
     return results_csv, results_json
 
-
 if __name__ == "__main__":
+    #comparar_exportaciones()
     comparar_sorts()
     results_csv, results_json = main()
    
